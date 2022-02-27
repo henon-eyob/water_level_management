@@ -3,14 +3,12 @@ package com.example.water_level_management
 import android.Manifest
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
 import android.bluetooth.BluetoothSocket
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
@@ -19,6 +17,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
@@ -50,12 +49,45 @@ class MainActivity : AppCompatActivity() {
         if(bluetoothAdapter.adapter.enable()){
             switchBt.isEnabled
             connectBT()
+            displayWaterLevel()
+            // if there is a data your sending to the bluetooth device
+            sendData()
             onOffText.text = "bluetooth is turned on"
         }else{
             onOffText.text = "bluetooth is turned off"
+            return
+        }
+
+    }
+
+    private fun sendData() {
+        try {
+            // anycomman you sent to the device
+
+        }catch (e:IOException){
+
+        }
+
+    }
+
+    private fun displayWaterLevel() {
+        // message comes by bytes of array from the bluetooth device
+        val buffer = ByteArray(256)
+        try {
+            val byte = inputStream.read(buffer)
+            // FIXME:
+            // change the bytes information obtained from the bluetooth device to the readable data
+            // do what you want to do to the display change the text start animation what so ever
+            val message = String(buffer,0,byte)
+
+            Log.d(TAG, "displayWaterLevel: $message ")
+
+        }catch (e:IOException){
+
         }
     }
-     // check permission
+
+    // check permission
     private fun checkPermission(){
          if (ActivityCompat.checkSelfPermission(
                  this,
@@ -114,7 +146,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-        }, 200)
+        }, 2000)
 
         try{
             inputStream = bluetoothSocket.inputStream
@@ -141,5 +173,6 @@ class MainActivity : AppCompatActivity() {
         lateinit var inputStream: InputStream
         lateinit var outputStream: OutputStream
         const val DEVICE_ADDRESS:String="70:26:05:B2:A7:B9"// THE BLUETOOTH MAC-ADDRESS
+        const val TAG = "MainActivity"
     }
 }
